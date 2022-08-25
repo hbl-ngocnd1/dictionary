@@ -1,0 +1,59 @@
+{{define "title"}}
+Dictionary
+{{end}}
+
+{{define "body"}}
+<link href="static/dictionary.css" rel="stylesheet">
+<div class="container">
+    <h2 style="text-align: center">日本語検定試験語彙</h2>
+    <div style="text-align: center">
+        <label class="radio-inline"><input type="radio" name="oplevel" value="n1" checked>N1</label>
+        <label class="radio-inline"><input type="radio" name="oplevel" value="n2">N2</label>
+        <label class="radio-inline"><input type="radio" name="oplevel" value="n3">N3</label>
+        <label class="radio-inline"><input type="radio" name="oplevel" value="n4">N4</label>
+        <label class="radio-inline"><input type="radio" name="oplevel" value="n5">N5</label>
+    </div>
+    <div id="act-button">
+        <button type="button" id="btn-reload" class="btn btn-primary" onclick="reload()">Reload</button>
+        <div id="btn-sync" class="input-group mb-3">
+            <input type="password" name="sync-password" class="form-control" placeholder="password" aria-label="password" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-danger btn-outline-secondary" onclick="getDictionary(true)">Sync</button>
+            </div>
+        </div>
+    </div>
+    <table id="dict-table" class="table table-bordered">
+        <tr>
+            <th style="width: 50px">番号</th>
+            <th style="width: 150px">言葉</th>
+            <th style="width: 150px">読み方</th>
+            <th style="width: 200px">英語</th>
+            <th style="width: 200px">ベトナム語</th>
+            <th style="width: auto">詳細</th>
+        </tr>
+        <tbody id="dict-table-body">
+        </tbody>
+    </table>
+    <div id="loader"></div>
+    <div id="paging" data-start="0" data-page-size="20" data-lock="false"></div>
+</div>
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-content-detail">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="static/dictionary.js" type="text/javascript"></script>
+{{end}}

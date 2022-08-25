@@ -1,0 +1,80 @@
+name: tests
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.18
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run linters
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDANT_URL: ${{ secrets.CLOUDANT_URL }}
+      GOOGLE_APPLICATION_API_KEY: ${{ secrets.GOOGLE_APPLICATION_API_KEY }}
+      DEBUG: true
+      CI_TEST: true
+    steps:
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: make test
+
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDANT_URL: ${{ secrets.CLOUDANT_URL }}
+      GOOGLE_APPLICATION_API_KEY: ${{ secrets.GOOGLE_APPLICATION_API_KEY }}
+      DEBUG: true
+      CI_TEST: true
+    steps:
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Make coverage
+        run: |
+          make coverage.out
+      - name: Convert coverage.out to coverage.lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.8
+      - name: Coveralls
+        uses: coverallsapp/github-action@1.1.3
+        with:
+          github-token: ${{ secrets.github_token }}
+          path-to-lcov: coverage.lcov
+
+  vulns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.18
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Make Go list
+        run: make go.list
+      - name: Nancy
+        uses: sonatype-nexus-community/nancy-github-action@main
