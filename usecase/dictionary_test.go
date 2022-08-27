@@ -182,9 +182,6 @@ func Test_GetDict(t *testing.T) {
 			},
 			newMockTranslateService: func(ctrl *gomock.Controller) services.TranslateService {
 				mock := mock_services.NewMockTranslateService(ctrl)
-				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]models.Word{
-					{}, {}, {}, {},
-				})
 				return mock
 			},
 			expect: nil,

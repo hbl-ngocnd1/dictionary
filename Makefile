@@ -12,7 +12,7 @@ go.list:
 mockgen:
 	mockgen -build_flags=$(MOCKGEN_BUILD_FLAGS) -destination=./services/mock_services/mock_dictionary.go github.com/hbl-ngocnd1/dictionary/services DictionaryService
 	mockgen -build_flags=$(MOCKGEN_BUILD_FLAGS) -destination=./services/mock_services/mock_translate.go github.com/hbl-ngocnd1/dictionary/services TranslateService
-
+	mockgen -build_flags=$(MOCKGEN_BUILD_FLAGS) -destination=./usecase/mock_usecase/mock_dictionary.go github.com/hbl-ngocnd1/dictionary/usecase DictUseCase
 .PHONY: test
 test: FLAGS ?= -parallel 3
 test:
@@ -20,3 +20,7 @@ test:
 
 coverage.out:
 	go test -v -covermode=count -coverprofile=coverage.out ./...
+
+html_coverage.out:
+	go test -v -covermode=count -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out

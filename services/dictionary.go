@@ -50,7 +50,13 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 		log.Fatal(err)
 	}
 	tag := helpers.GetElementByClass(doc, "entry clearfix")
+	if tag == nil {
+		return nil, nil
+	}
 	targets := helpers.GetListElementByTag(tag, "p")
+	if len(targets) == 0 {
+		return nil, nil
+	}
 	if len(targets) > 2 {
 		targets = targets[2:]
 	}

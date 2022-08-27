@@ -1,34 +1,71 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"sync"
+	"net/http/httptest"
+	"os"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/hbl-ngocnd1/dictionary/usecase"
+	"github.com/hbl-ngocnd1/dictionary/usecase/mock_usecase"
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNewDictHandler(t *testing.T) {
-	var wg sync.WaitGroup
-	for i := 0; i < 2; i++ {
-		j := i + 1
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			fmt.Println("start request: ", j)
-			defer fmt.Println("done request: ", j)
-			url := "http://localhost:8080/api/dictionary"
-			if j == 2 {
-				url = url + "?not_cache=true&level=n2"
-			}
-			res, err := http.Get(url)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			fmt.Printf("%+v", res.Body)
-		}()
+func InitTest() {
+	if os.Getenv("CI") == "true" {
+		return
 	}
-	wg.Wait()
-	fmt.Println("end")
+	err := godotenv.Load("../.env_test")
+	if err != nil {
+		panic(err)
+	}
+}
+
+func TestNewDictHandler(t *testing.T) {
+	patterns := []struct {
+		description   string
+		urlParam      string
+		newMockDictUC func(ctrl *gomock.Controller) usecase.DictUseCase
+		statusCode    int
+	}{
+		{
+			description: "400: error",
+			urlParam:    "level=n6",
+			statusCode:  http.StatusBadRequest,
+		},
+		{
+			description: "500: error",
+			urlParam:    "",
+			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
+				mock := mock_usecase.NewMockDictUseCase(ctrl)
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("unexpected"))
+				return mock
+			},
+			statusCode: http.StatusInternalServerError,
+		},
+	}
+	for i, p := range patterns {
+		t.Run(fmt.Sprintf("%d:%s", i, p.description), func(t *testing.T) {
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("%s?%s", "/api/dictionary", p.urlParam), nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			var mockDictUC usecase.DictUseCase
+			if p.newMockDictUC != nil {
+				mockDictUC = p.newMockDictUC(ctrl)
+			}
+			h := &dictHandler{dictUseCase: mockDictUC}
+			// Assertions
+			if assert.NoError(t, h.ApiDict(c)) {
+				assert.Equal(t, p.statusCode, rec.Code)
+			}
+		})
+	}
 }

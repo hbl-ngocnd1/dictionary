@@ -107,11 +107,11 @@ func translateToVN(ctx context.Context, texts []string) []string {
 	resp, err := client.Translate(ctx, texts, lang, nil)
 	if err != nil {
 		log.Println(fmt.Errorf("translate: %v", err))
-		return []string{""}
+		return texts
 	}
 	if len(resp) == 0 {
 		log.Println(fmt.Errorf("translate returned empty response to text: %v", texts))
-		return []string{""}
+		return texts
 	}
 	result := make([]string, len(resp))
 	for i, res := range resp {

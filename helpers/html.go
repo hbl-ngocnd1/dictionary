@@ -9,6 +9,9 @@ import (
 )
 
 func GetListElementByTag(n *html.Node, tag string) []*html.Node {
+	if n == nil {
+		return nil
+	}
 	var result []*html.Node
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		if c.Data == tag {
