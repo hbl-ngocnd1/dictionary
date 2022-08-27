@@ -1,1 +1,1 @@
-web: get-started
+web: dictionary
