@@ -1,10 +1,8 @@
 FROM golang:latest
 WORKDIR /go/src/app
-COPY main.go /go/src/app
-COPY vendor /go/src/app/vendor
-COPY static /go/src/app/static
-COPY public/views /go/src/app/public/views
-
+COPY go.* ./
+RUN go mod download
+COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 FROM alpine:latest

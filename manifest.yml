@@ -1,5 +1,0 @@
----
-applications:
-- name: GetStartedGo
-  random-route: true
-  memory: 128M
