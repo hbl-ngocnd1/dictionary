@@ -44,16 +44,19 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(string(body))
 	doc, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
 		log.Fatal(err)
 	}
 	tag := helpers.GetElementByClass(doc, "entry clearfix")
 	if tag == nil {
+		log.Println("can't get entry clearfix")
 		return nil, nil
 	}
 	targets := helpers.GetListElementByTag(tag, "p")
 	if len(targets) == 0 {
+		log.Println("can't get entry clearfix p")
 		return nil, nil
 	}
 	if len(targets) > 2 {
