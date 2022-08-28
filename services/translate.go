@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/translate"
@@ -32,6 +31,9 @@ func (t *translateService) TranslateData(ctx context.Context, data []models.Word
 var BucketSize = 100
 
 func translateData(ctx context.Context, data []models.Word) []models.Word {
+	if os.Getenv("DEBUG") == "true" {
+		BucketSize = 10
+	}
 	mapData := make(map[int]models.Word, len(data))
 	maxIdx := 0
 	for _, w := range data {
@@ -47,9 +49,13 @@ func translateData(ctx context.Context, data []models.Word) []models.Word {
 		}
 	}
 	translated := make([]string, 0, len(trans))
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	transMap := make(map[int][]string)
+	type bulkTransData struct {
+		index int
+		data  []string
+	}
+	c := make(chan bulkTransData)
+	defer close(c)
+	bulkLen := 0
 	for i := 0; i < len(trans); {
 		e := i + BucketSize
 		if e > len(trans) {
@@ -57,20 +63,22 @@ func translateData(ctx context.Context, data []models.Word) []models.Word {
 		}
 		start := i
 		end := e
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		bulkLen++
+		index := bulkLen
+		go func(c chan bulkTransData) {
 			bulk := translateToVN(ctx, trans[start:end])
-			mu.Lock()
-			transMap[start] = bulk
-			mu.Unlock()
-		}()
+			c <- bulkTransData{index: index, data: bulk}
+		}(c)
 		i = e
 	}
-	wg.Wait()
-	for i := 0; i < len(trans); i = i + BucketSize {
-		if arr, ok := transMap[i]; ok {
-			translated = append(translated, arr...)
+	transMap := make(map[int][]string, bulkLen)
+	for i := 1; i <= bulkLen; i++ {
+		info := <-c
+		transMap[info.index] = info.data
+	}
+	for i := 1; i <= bulkLen; i++ {
+		if v, ok := transMap[i]; ok {
+			translated = append(translated, v...)
 		}
 	}
 	start := 0
