@@ -16,13 +16,16 @@ func GetDB() *couchdb.DB {
 	return client.DB(dbName)
 }
 func InitDB() error {
+	var cloudantUrl string
+	var err error
 	//When running locally, get credentials from .env file.
-	err := godotenv.Load()
-	if err != nil {
-		log.Println(".env file does not exist")
+	if os.Getenv("ENV") != "prd" {
+		err = godotenv.Load()
+		if err != nil {
+			log.Println(".env file does not exist")
+		}
+		cloudantUrl = os.Getenv("CLOUDANT_URL")
 	}
-	cloudantUrl := os.Getenv("CLOUDANT_URL")
-
 	appEnv, _ := cfenv.Current()
 	if appEnv != nil {
 		cloudantService, _ := appEnv.Services.WithLabel("cloudantNoSQLDB")
