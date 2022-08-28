@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/hbl-ngocnd1/dictionary/helpers"
@@ -60,48 +59,52 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 	if len(targets) > 2 {
 		targets = targets[2:]
 	}
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	mapWords := make(map[int]models.Word, len(targets))
+	c := make(chan models.Word)
+	defer close(c)
+	cLen := 0
 	for i, target := range targets {
 		id := i
 		if os.Getenv("DEBUG") == "true" && i == 40 {
 			break
 		}
+		cLen++
 		tar := target
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			c := tar.FirstChild
-			if c == nil {
-				c = tar
+		go func(c chan models.Word) {
+			child := tar.FirstChild
+			if child == nil {
+				child = tar
 			}
 			var detail string
 			var errDetail error
-			detailURL, ok := helpers.GetAttribute(c, "href")
+			detailURL, ok := helpers.GetAttribute(child, "href")
 			if ok {
 				detail, errDetail = d.getDetail(ctx, detailURL, id)
 				if errDetail != nil {
 					log.Println(errDetail)
 				}
 			}
-			w := models.MakeWord(c, detailURL, detail, id)
+			w := models.MakeWord(child, detailURL, detail, id)
 			if w == nil {
 				return
 			}
-			mu.Lock()
-			mapWords[id] = *w
-			mu.Unlock()
-		}()
+			c <- *w
+		}(c)
 	}
-	wg.Wait()
-	log.Println("clone done")
-	data := make([]models.Word, 0, len(mapWords))
-	for i := 0; i < len(mapWords); i++ {
-		if w, ok := mapWords[i]; ok {
-			data = append(data, w)
+	data := make([]models.Word, 0, cLen)
+	mapResult := make(map[int]*models.Word)
+	maxIdx := 0
+	for i := 0; i < cLen; i++ {
+		info := <-c
+		maxIdx = i
+		mapResult[info.Index] = &info
+	}
+	for i := 0; i <= maxIdx; i++ {
+		if mapResult[i] == nil {
+			continue
 		}
+		data = append(data, *mapResult[i])
 	}
+	log.Println("clone done")
 	return data, nil
 }
 

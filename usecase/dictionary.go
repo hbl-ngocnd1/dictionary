@@ -36,7 +36,8 @@ type DictUseCase interface {
 }
 
 func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string) ([]models.Word, error) {
-	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil {
+	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil && len(u.cacheData[level]) > 0 {
+		log.Println("use data from cache")
 		u.mu.Lock()
 		defer u.mu.Unlock()
 		if start > len(u.cacheData[level]) {
@@ -53,6 +54,7 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 			return nil, PermissionDeniedErr
 		}
 	}
+	log.Println("use data from source")
 	u.mu.Lock()
 	defer u.mu.Unlock()
 	url := fmt.Sprintf("https://japanesetest4you.com/jlpt-%s-vocabulary-list/", level)
@@ -61,7 +63,9 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 		log.Print(err)
 		return nil, err
 	}
+	log.Println(data)
 	data = u.translateService.TranslateData(ctx, data)
+	log.Println(data)
 	if u.cacheData == nil {
 		u.cacheData = make(map[string][]models.Word)
 	}
