@@ -1,5 +1,5 @@
 [![tests](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/tests.yml/badge.svg)](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/tests.yml)
-[![Deploy to IBM Cloud Foundry](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/dev.yml/badge.svg)](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/dev.yml)
+[![Deploy to Amazon ECS](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/aws.yml/badge.svg)](https://github.com/hbl-ngocnd1/dictionary/actions/workflows/aws.yml)
 ## Prerequisites
 
 You'll need the following:
