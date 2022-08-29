@@ -84,9 +84,9 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
           environment-variables: |
-            GOOGLE_APPLICATION_API_KEY={{ secrets.GOOGLE_APPLICATION_API_KEY }}
-            CLOUDANT_URL={{ secrets.CLOUDANT_URL }}
-            SYNC_PASS={{ secrets.SYNC_PASS }}
+            GOOGLE_APPLICATION_API_KEY=${{ secrets.GOOGLE_APPLICATION_API_KEY }}
+            CLOUDANT_URL=${{ secrets.CLOUDANT_URL }}
+            SYNC_PASS=${{ secrets.SYNC_PASS }}
             PORT=80
 
       - name: Deploy Amazon ECS task definition
