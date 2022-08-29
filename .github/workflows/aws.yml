@@ -83,11 +83,11 @@ jobs:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
-          environment-variables:
-          - GOOGLE_APPLICATION_API_KEY: {{ secrets.GOOGLE_APPLICATION_API_KEY }}
-          - CLOUDANT_URL: {{ secrets.CLOUDANT_URL }}
-          - SYNC_PASS: {{ secrets.SYNC_PASS }}
-          - PORT: 80
+          environment-variables: |
+            GOOGLE_APPLICATION_API_KEY: {{ secrets.GOOGLE_APPLICATION_API_KEY }}
+            CLOUDANT_URL: {{ secrets.CLOUDANT_URL }}
+            SYNC_PASS: {{ secrets.SYNC_PASS }}
+            PORT: 80
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
