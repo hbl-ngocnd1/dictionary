@@ -39,7 +39,9 @@ func SetupServer() *echo.Echo {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
+	e.GET("/healthcheck", func(c echo.Context) error {
+		return c.String(http.StatusOK, "pong")
+	})
 	e.Static("/static", "./static")
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "home.html", map[string]interface{}{"router": "home"})
