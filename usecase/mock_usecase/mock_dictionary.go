@@ -64,3 +64,18 @@ func (mr *MockDictUseCaseMockRecorder) GetDict(arg0, arg1, arg2, arg3, arg4, arg
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDict", reflect.TypeOf((*MockDictUseCase)(nil).GetDict), arg0, arg1, arg2, arg3, arg4, arg5)
 }
+
+// GetITJapanWonderWork mocks base method.
+func (m *MockDictUseCase) GetITJapanWonderWork(arg0 context.Context) ([]models.WonderWord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetITJapanWonderWork", arg0)
+	ret0, _ := ret[0].([]models.WonderWord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetITJapanWonderWork indicates an expected call of GetITJapanWonderWork.
+func (mr *MockDictUseCaseMockRecorder) GetITJapanWonderWork(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetITJapanWonderWork", reflect.TypeOf((*MockDictUseCase)(nil).GetITJapanWonderWork), arg0)
+}

@@ -25,6 +25,7 @@ func NewDictionary() *dictionaryService {
 type DictionaryService interface {
 	GetDictionary(context.Context, string) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (string, error)
+	GetITJapanWonderWork(context.Context, string) ([][]models.WonderWord, error)
 }
 
 func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]models.Word, error) {
@@ -153,4 +154,43 @@ func (d *dictionaryService) getDetail(ctx context.Context, url string, i int) (s
 		}
 	}
 	return strings.Join(data, ""), nil
+}
+
+func (d *dictionaryService) GetITJapanWonderWork(ctx context.Context, url string) ([][]models.WonderWord, error) {
+	ctx, cancel := context.WithTimeout(ctx, 50*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	client := http.DefaultClient
+	res, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	body, err := io.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	doc, err := html.Parse(bytes.NewReader(body))
+	if err != nil {
+		log.Fatal(err)
+	}
+	contentDiv := helpers.GetElementById(doc, "personal-public-article-body")
+	nextDiv := helpers.GetListElementByTag(contentDiv, "div")
+	tables := helpers.GetListElementByTag(nextDiv[0], "table")
+	data := make([][]models.WonderWord, len(tables))
+	for idx1, table := range tables {
+		tbody := helpers.GetListElementByTag(table, "tbody")
+		trs := helpers.GetListElementByTag(tbody[0], "tr")
+		data[idx1] = make([]models.WonderWord, len(trs))
+		for idx2, tr := range trs {
+			work := models.MakeWonderWork(tr, idx2)
+			if work != nil {
+				data[idx1][idx2] = *work
+			}
+		}
+	}
+	return data, nil
 }

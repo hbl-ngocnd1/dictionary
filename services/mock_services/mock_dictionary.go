@@ -64,3 +64,18 @@ func (mr *MockDictionaryServiceMockRecorder) GetDictionary(arg0, arg1 interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDictionary", reflect.TypeOf((*MockDictionaryService)(nil).GetDictionary), arg0, arg1)
 }
+
+// GetITJapanWonderWork mocks base method.
+func (m *MockDictionaryService) GetITJapanWonderWork(arg0 context.Context, arg1 string) ([][]models.WonderWord, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetITJapanWonderWork", arg0, arg1)
+	ret0, _ := ret[0].([][]models.WonderWord)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetITJapanWonderWork indicates an expected call of GetITJapanWonderWork.
+func (mr *MockDictionaryServiceMockRecorder) GetITJapanWonderWork(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetITJapanWonderWork", reflect.TypeOf((*MockDictionaryService)(nil).GetITJapanWonderWork), arg0, arg1)
+}
