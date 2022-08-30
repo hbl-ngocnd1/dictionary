@@ -104,7 +104,7 @@ func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.Wond
 	if err != nil {
 		return nil, err
 	}
-	for idx, _ := range data {
+	for idx := range data {
 		data[idx] = services.CompositeWonderWordData(data[idx], u.translateService.TranslateData(ctx, services.MakeTransDataFromWonderWord(data[idx])))
 	}
 	u.cacheWonderWord = data

@@ -38,7 +38,7 @@ type TransData struct {
 
 func MakeTransDataFromWord(inputs []models.Word) []TransData {
 	outs := make([]TransData, len(inputs))
-	for i, _ := range inputs {
+	for i := range inputs {
 		outs[i].Index = inputs[i].Index
 		outs[i].Word = inputs[i].MeanEng
 	}
@@ -47,10 +47,10 @@ func MakeTransDataFromWord(inputs []models.Word) []TransData {
 
 func CompositeWordData(data []models.Word, trans []TransData) []models.Word {
 	mapTrans := make(map[int]TransData, len(trans))
-	for i, _ := range trans {
+	for i := range trans {
 		mapTrans[trans[i].Index] = trans[i]
 	}
-	for i, _ := range data {
+	for i := range data {
 		if tran, ok := mapTrans[data[i].Index]; ok {
 			data[i].MeanVN = tran.Mean
 		}
@@ -60,7 +60,7 @@ func CompositeWordData(data []models.Word, trans []TransData) []models.Word {
 
 func MakeTransDataFromWonderWord(inputs []models.WonderWord) []TransData {
 	outs := make([]TransData, len(inputs))
-	for i, _ := range inputs {
+	for i := range inputs {
 		outs[i].Index = inputs[i].Index
 		outs[i].Word = inputs[i].Term
 	}
@@ -69,10 +69,10 @@ func MakeTransDataFromWonderWord(inputs []models.WonderWord) []TransData {
 
 func CompositeWonderWordData(data []models.WonderWord, trans []TransData) []models.WonderWord {
 	mapTrans := make(map[int]TransData, len(trans))
-	for i, _ := range trans {
+	for i := range trans {
 		mapTrans[trans[i].Index] = trans[i]
 	}
-	for i, _ := range data {
+	for i := range data {
 		if tran, ok := mapTrans[data[i].Index]; ok {
 			data[i].Mean = tran.Mean
 		}
