@@ -152,13 +152,28 @@ func (d *dictionaryService) getDetail(ctx context.Context, url string, i int) (s
 	if err != nil {
 		return "", err
 	}
+	elms := strings.Split(url, "/")
+	fileName := elms[len(elms)-2]
+
 	doc, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
 		return "", err
 	}
 	var data []string
 	tag := helpers.GetElementByClass(doc, "entry clearfix")
+	if tag == nil {
+		body, err = os.ReadFile(path.Join("cache", fileName))
+		if err != nil {
+			return "", nil
+		}
+		doc, err = html.Parse(bytes.NewReader(body))
+		if err != nil {
+			log.Fatal(err)
+		}
+		tag = helpers.GetElementByClass(doc, "entry clearfix")
+	}
 	if tag != nil {
+		_ = os.WriteFile(path.Join("cache", fileName), body, 0666)
 		nodes := helpers.GetListElementByTag(tag, "p")
 		data = []string{helpers.RenderNode(nodes[1])}
 		for _, node := range nodes[3:] {
