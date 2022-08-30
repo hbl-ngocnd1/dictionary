@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -42,6 +41,5 @@ func TestTranslateService_TranslateData(t *testing.T) {
 		},
 	}
 	res := translateData(ctx, data)
-	fmt.Println(res)
 	assert.Equal(t, len(data), len(res))
 }

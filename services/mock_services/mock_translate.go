@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	models "github.com/hbl-ngocnd1/dictionary/models"
+	services "github.com/hbl-ngocnd1/dictionary/services"
 )
 
 // MockTranslateService is a mock of TranslateService interface.
@@ -36,10 +36,10 @@ func (m *MockTranslateService) EXPECT() *MockTranslateServiceMockRecorder {
 }
 
 // TranslateData mocks base method.
-func (m *MockTranslateService) TranslateData(arg0 context.Context, arg1 []models.Word) []models.Word {
+func (m *MockTranslateService) TranslateData(arg0 context.Context, arg1 []services.TransData) []services.TransData {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TranslateData", arg0, arg1)
-	ret0, _ := ret[0].([]models.Word)
+	ret0, _ := ret[0].([]services.TransData)
 	return ret0
 }
 

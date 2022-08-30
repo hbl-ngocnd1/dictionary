@@ -42,7 +42,7 @@ func Test_GetDict(t *testing.T) {
 			},
 			newMockTranslateService: func(ctrl *gomock.Controller) services.TranslateService {
 				mock := mock_services.NewMockTranslateService(ctrl)
-				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]models.Word{
+				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]services.TransData{
 					{}, {}, {}, {},
 				})
 				return mock
@@ -68,7 +68,7 @@ func Test_GetDict(t *testing.T) {
 			},
 			newMockTranslateService: func(ctrl *gomock.Controller) services.TranslateService {
 				mock := mock_services.NewMockTranslateService(ctrl)
-				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]models.Word{
+				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]services.TransData{
 					{}, {}, {}, {},
 				})
 				return mock
@@ -94,7 +94,7 @@ func Test_GetDict(t *testing.T) {
 			},
 			newMockTranslateService: func(ctrl *gomock.Controller) services.TranslateService {
 				mock := mock_services.NewMockTranslateService(ctrl)
-				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]models.Word{
+				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]services.TransData{
 					{},
 				})
 				return mock
@@ -128,7 +128,7 @@ func Test_GetDict(t *testing.T) {
 			},
 			newMockTranslateService: func(ctrl *gomock.Controller) services.TranslateService {
 				mock := mock_services.NewMockTranslateService(ctrl)
-				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]models.Word{
+				mock.EXPECT().TranslateData(gomock.Any(), gomock.Any()).Return([]services.TransData{
 					{}, {}, {}, {},
 				})
 				return mock

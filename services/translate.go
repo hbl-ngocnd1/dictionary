@@ -85,8 +85,12 @@ func translateData(ctx context.Context, data []TransData) []TransData {
 		BucketSize = 10
 	}
 	mapData := make(map[int]TransData, len(data))
+	minIdx := 0
 	maxIdx := 0
 	for _, w := range data {
+		if w.Index < minIdx {
+			minIdx = w.Index
+		}
 		if w.Index > maxIdx {
 			maxIdx = w.Index
 		}
@@ -94,7 +98,7 @@ func translateData(ctx context.Context, data []TransData) []TransData {
 	}
 
 	trans := make([]string, maxIdx+1)
-	for i := 0; i <= maxIdx; i++ {
+	for i := minIdx; i <= maxIdx; i++ {
 		if d, ok := mapData[i]; ok {
 			trans[i] = d.Word
 		}
@@ -140,7 +144,7 @@ func translateData(ctx context.Context, data []TransData) []TransData {
 	}
 
 	result := make([]TransData, 0, len(mapData))
-	for i := 0; i < maxIdx; i++ {
+	for i := minIdx; i <= maxIdx; i++ {
 		if w, ok := mapData[i]; ok {
 			result = append(result, w)
 		}
