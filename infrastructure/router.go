@@ -32,6 +32,7 @@ func SetupServer() *echo.Echo {
 	templates["home.html"] = template.Must(template.ParseFiles("public/views/home.html", "public/views/base.html"))
 	templates["upload.html"] = template.Must(template.ParseFiles("public/views/upload.html", "public/views/base.html"))
 	templates["dictionary.html"] = template.Must(template.ParseFiles("public/views/dictionary.html", "public/views/base.html"))
+	templates["wonder-word.html"] = template.Must(template.ParseFiles("public/views/wonder-word.html", "public/views/base.html"))
 
 	e.Renderer = &TemplateRegistry{
 		templates: templates,
@@ -56,5 +57,8 @@ func SetupServer() *echo.Echo {
 	e.GET("/dictionary", dictHandler.Dict)
 	e.GET("/api/dictionary", dictHandler.ApiDict)
 	e.PUT("api/dictionary/:index", dictHandler.ApiGetDetail)
+
+	e.GET("/wonder-word", dictHandler.ITJapanWonderWord)
+	e.GET("/api/wonder-word", dictHandler.ApiITJapanWonderWord)
 	return e
 }

@@ -20,6 +20,7 @@ type dictUseCase struct {
 	translateService  services.TranslateService
 	dictionaryService services.DictionaryService
 	cacheData         map[string][]models.Word
+	cacheWonderWord   [][]models.WonderWord
 	mu                sync.Mutex
 }
 
@@ -33,10 +34,12 @@ func NewDictUseCase() *dictUseCase {
 type DictUseCase interface {
 	GetDict(context.Context, int, int, string, string, string) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
+	GetITJapanWonderWork(context.Context) ([][]models.WonderWord, error)
 }
 
 func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string) ([]models.Word, error) {
-	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil {
+	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil && len(u.cacheData[level]) > 0 {
+		log.Println("use data from cache")
 		u.mu.Lock()
 		defer u.mu.Unlock()
 		if start > len(u.cacheData[level]) {
@@ -53,6 +56,7 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 			return nil, PermissionDeniedErr
 		}
 	}
+	log.Println("use data from source")
 	u.mu.Lock()
 	defer u.mu.Unlock()
 	url := fmt.Sprintf("https://japanesetest4you.com/jlpt-%s-vocabulary-list/", level)
@@ -61,7 +65,7 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 		log.Print(err)
 		return nil, err
 	}
-	data = u.translateService.TranslateData(ctx, data)
+	data = services.CompositeWordData(data, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(data)))
 	if u.cacheData == nil {
 		u.cacheData = make(map[string][]models.Word)
 	}
@@ -90,4 +94,19 @@ func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*
 	}
 	u.cacheData[level][index].Detail = data
 	return &data, nil
+}
+
+func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.WonderWord, error) {
+	if u.cacheWonderWord == nil && len(u.cacheWonderWord) > 0 {
+		return u.cacheWonderWord, nil
+	}
+	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854")
+	if err != nil {
+		return nil, err
+	}
+	for idx := range data {
+		data[idx] = services.CompositeWonderWordData(data[idx], u.translateService.TranslateData(ctx, services.MakeTransDataFromWonderWord(data[idx])))
+	}
+	u.cacheWonderWord = data
+	return data, nil
 }

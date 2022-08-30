@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/translate"
@@ -22,34 +21,96 @@ func NewTranslate() *translateService {
 }
 
 type TranslateService interface {
-	TranslateData(context.Context, []models.Word) []models.Word
+	TranslateData(context.Context, []TransData) []TransData
 }
 
-func (t *translateService) TranslateData(ctx context.Context, data []models.Word) []models.Word {
+func (t *translateService) TranslateData(ctx context.Context, data []TransData) []TransData {
 	return translateData(ctx, data)
 }
 
 var BucketSize = 100
 
-func translateData(ctx context.Context, data []models.Word) []models.Word {
-	mapData := make(map[int]models.Word, len(data))
+type TransData struct {
+	Index int
+	Word  string
+	Mean  string
+}
+
+func MakeTransDataFromWord(inputs []models.Word) []TransData {
+	outs := make([]TransData, len(inputs))
+	for i := range inputs {
+		outs[i].Index = inputs[i].Index
+		outs[i].Word = inputs[i].MeanEng
+	}
+	return outs
+}
+
+func CompositeWordData(data []models.Word, trans []TransData) []models.Word {
+	mapTrans := make(map[int]TransData, len(trans))
+	for i := range trans {
+		mapTrans[trans[i].Index] = trans[i]
+	}
+	for i := range data {
+		if tran, ok := mapTrans[data[i].Index]; ok {
+			data[i].MeanVN = tran.Mean
+		}
+	}
+	return data
+}
+
+func MakeTransDataFromWonderWord(inputs []models.WonderWord) []TransData {
+	outs := make([]TransData, len(inputs))
+	for i := range inputs {
+		outs[i].Index = inputs[i].Index
+		outs[i].Word = inputs[i].Term
+	}
+	return outs
+}
+
+func CompositeWonderWordData(data []models.WonderWord, trans []TransData) []models.WonderWord {
+	mapTrans := make(map[int]TransData, len(trans))
+	for i := range trans {
+		mapTrans[trans[i].Index] = trans[i]
+	}
+	for i := range data {
+		if tran, ok := mapTrans[data[i].Index]; ok {
+			data[i].Mean = tran.Mean
+		}
+	}
+	return data
+}
+
+func translateData(ctx context.Context, data []TransData) []TransData {
+	if os.Getenv("DEBUG") == "true" {
+		BucketSize = 10
+	}
+	mapData := make(map[int]TransData, len(data))
+	minIdx := 0
 	maxIdx := 0
 	for _, w := range data {
+		if w.Index < minIdx {
+			minIdx = w.Index
+		}
 		if w.Index > maxIdx {
 			maxIdx = w.Index
 		}
 		mapData[w.Index] = w
 	}
+
 	trans := make([]string, maxIdx+1)
-	for i := 0; i <= maxIdx; i++ {
+	for i := minIdx; i <= maxIdx; i++ {
 		if d, ok := mapData[i]; ok {
-			trans[i] = d.MeanEng
+			trans[i] = d.Word
 		}
 	}
 	translated := make([]string, 0, len(trans))
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	transMap := make(map[int][]string)
+	type bulkTransData struct {
+		index int
+		data  []string
+	}
+	c := make(chan bulkTransData)
+	defer close(c)
+	bulkLen := 0
 	for i := 0; i < len(trans); {
 		e := i + BucketSize
 		if e > len(trans) {
@@ -57,34 +118,33 @@ func translateData(ctx context.Context, data []models.Word) []models.Word {
 		}
 		start := i
 		end := e
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		bulkLen++
+		index := bulkLen
+		go func(c chan bulkTransData) {
 			bulk := translateToVN(ctx, trans[start:end])
-			mu.Lock()
-			transMap[start] = bulk
-			mu.Unlock()
-		}()
+			c <- bulkTransData{index: index, data: bulk}
+		}(c)
 		i = e
 	}
-	wg.Wait()
-	for i := 0; i < len(trans); i = i + BucketSize {
-		if arr, ok := transMap[i]; ok {
-			translated = append(translated, arr...)
+	transMap := make(map[int][]string, bulkLen)
+	for i := 1; i <= bulkLen; i++ {
+		info := <-c
+		transMap[info.index] = info.data
+	}
+	for i := 1; i <= bulkLen; i++ {
+		if v, ok := transMap[i]; ok {
+			translated = append(translated, v...)
 		}
 	}
-	start := 0
 	for i, vn := range translated {
 		if v, ok := mapData[i]; ok {
-			if start == 0 {
-				start = i
-			}
-			v.MeanVN = vn
+			v.Mean = vn
 			mapData[i] = v
 		}
 	}
-	result := make([]models.Word, 0, len(mapData))
-	for i := start; i < len(mapData)+start; i++ {
+
+	result := make([]TransData, 0, len(mapData))
+	for i := minIdx; i <= maxIdx; i++ {
 		if w, ok := mapData[i]; ok {
 			result = append(result, w)
 		}

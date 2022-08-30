@@ -2,7 +2,9 @@ package helpers
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"regexp"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -83,4 +85,14 @@ func GetElementById(n *html.Node, id string) *html.Node {
 
 func GetElementByClass(n *html.Node, class string) *html.Node {
 	return traverse(n, class, checkClass)
+}
+
+func InnerText(n *html.Node, tag string) string {
+	outerText := RenderNode(n)
+	re := regexp.MustCompile(fmt.Sprintf(`<%s.*?>(.*)</%s>`, tag, tag))
+	submatchall := re.FindStringSubmatch(outerText)
+	if len(submatchall) >= 2 {
+		return submatchall[1]
+	}
+	return outerText
 }

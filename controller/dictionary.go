@@ -82,3 +82,23 @@ func (f *dictHandler) ApiGetDetail(c echo.Context) error {
 	}
 	return c.String(http.StatusOK, *data)
 }
+
+func (f *dictHandler) ITJapanWonderWord(c echo.Context) error {
+	return c.Render(http.StatusOK, "wonder-word.html", map[string]interface{}{"router": "wonder-word"})
+}
+
+func (f *dictHandler) ApiITJapanWonderWord(c echo.Context) error {
+	ctx := context.Background()
+	data, err := f.dictUseCase.GetITJapanWonderWork(ctx)
+	switch err {
+	case nil:
+	case usecase.InvalidErr:
+		return c.NoContent(http.StatusBadRequest)
+	default:
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if data == nil {
+		return c.String(http.StatusOK, "")
+	}
+	return c.JSON(http.StatusOK, data)
+}

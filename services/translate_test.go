@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hbl-ngocnd1/dictionary/models"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,14 +30,14 @@ func TestTranslateService_translateToVN(t *testing.T) {
 func TestTranslateService_TranslateData(t *testing.T) {
 	InitTest()
 	ctx := context.Background()
-	data := []models.Word{
+	data := []TransData{
 		{
-			Index:   3,
-			MeanEng: "cache",
+			Index: 3,
+			Word:  "cache",
 		},
 		{
-			Index:   4,
-			MeanEng: "computer",
+			Index: 4,
+			Word:  "computer",
 		},
 	}
 	res := translateData(ctx, data)

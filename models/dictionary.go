@@ -3,6 +3,7 @@ package models
 import (
 	"strings"
 
+	"github.com/hbl-ngocnd1/dictionary/helpers"
 	"golang.org/x/net/html"
 )
 
@@ -44,4 +45,28 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		Detail:   detail,
 		Link:     link,
 	}
+}
+
+type WonderWord struct {
+	Index       int    `json:"index"`
+	Term        string `json:"term"`
+	Reading     string `json:"reading"`
+	Explanation string `json:"explanation"`
+	Example     string `json:"example"`
+	Mean        string `json:"mean"`
+}
+
+func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
+	tds := helpers.GetListElementByTag(tr, "td")
+	if len(tds) == 4 {
+		return &WonderWord{
+			idx,
+			helpers.InnerText(tds[0], "td"),
+			helpers.InnerText(tds[1], "td"),
+			helpers.InnerText(tds[2], "td"),
+			helpers.InnerText(tds[3], "td"),
+			"",
+		}
+	}
+	return nil
 }
