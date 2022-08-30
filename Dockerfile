@@ -11,6 +11,7 @@ RUN apk --no-cache add curl
 WORKDIR /root/
 COPY --from=0 go/src/app/main .
 COPY --from=0 go/src/app/static static
+COPY --from=0 go/src/app/cache cache
 COPY --from=0 go/src/app/public/views public/views
 EXPOSE 80
 CMD ["./main"]

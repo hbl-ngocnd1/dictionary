@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -45,12 +46,25 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(string(body))
+	//log.Println(string(body))
+	elms := strings.Split(url, "/")
+	fileName := elms[len(elms)-2]
 	doc, err := html.Parse(bytes.NewReader(body))
 	if err != nil {
 		log.Fatal(err)
 	}
 	tag := helpers.GetElementByClass(doc, "entry clearfix")
+	if tag == nil {
+		body, err = os.ReadFile(path.Join("cache", fileName))
+		if err != nil {
+			return nil, nil
+		}
+		doc, err = html.Parse(bytes.NewReader(body))
+		if err != nil {
+			log.Fatal(err)
+		}
+		tag = helpers.GetElementByClass(doc, "entry clearfix")
+	}
 	if tag == nil {
 		log.Println("can't get entry clearfix")
 		return nil, nil
@@ -60,6 +74,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 		log.Println("can't get entry clearfix p")
 		return nil, nil
 	}
+	os.WriteFile(path.Join("cache", fileName), body, 0666)
 	if len(targets) > 2 {
 		targets = targets[2:]
 	}
