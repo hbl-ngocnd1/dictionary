@@ -1,4 +1,4 @@
-function getDictionary(notCache){
+function getWonDerWord(notCache){
     if (notCache) {
         resetPaging();
     }
@@ -16,17 +16,16 @@ function getDictionary(notCache){
                         content = content + "<td>" + row.term + "</td>";
                         content = content + "<td>" + row.reading + "</td>";
                         content = content + "<td>" + row.explanation + "</td>";
-                        content = content + "<td>" + row.reading + "</td>";
+                        content = content + "<td>" + row.mean + "</td>";
                         content = content + "<td>" + row.example.replace(/<[^>]*>?/gm, '') + "</td>";
-                        console.log(row.example);
                         content = content + "</tr>";
                         $('#dict-table-body').append(content);
                     });
                 });
-                let pageSize = parseInt(document.getElementById("paging").getAttribute("data-page-size"),10)
-                let prevStart = parseInt(document.getElementById("paging").getAttribute("data-start"),10)
-                document.getElementById("paging").setAttribute("data-start",(prevStart+pageSize).toString(10))
-                document.getElementById("paging").setAttribute("data-lock","false");
+                // let pageSize = parseInt(document.getElementById("paging").getAttribute("data-page-size"),10)
+                // let prevStart = parseInt(document.getElementById("paging").getAttribute("data-start"),10)
+                // document.getElementById("paging").setAttribute("data-start",(prevStart+pageSize).toString(10))
+                // document.getElementById("paging").setAttribute("data-lock","false");
             }
             showPage();
         })
@@ -35,33 +34,33 @@ function getDictionary(notCache){
         })
 }
 
-window.onscroll = function(ev) {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-        if(document.getElementById("paging").getAttribute("data-lock") === "false"){
-            document.getElementById("paging").setAttribute("data-offset",document.body.offsetHeight.toString());
-            getDictionary();
-        }
-    }
-};
+// window.onscroll = function(ev) {
+//     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+//         if(document.getElementById("paging").getAttribute("data-lock") === "false"){
+//             document.getElementById("paging").setAttribute("data-offset",document.body.offsetHeight.toString());
+//             getDictionary();
+//         }
+//     }
+// };
 
-$('input[type=radio][name=oplevel]').change(function() {
-    reload();
-});
+// $('input[type=radio][name=oplevel]').change(function() {
+//     reload();
+// });
 
 function reload(){
     resetPaging();
-    getDictionary();
+    getWonDerWord();
 }
 
-function resetPaging(){
-    document.getElementById("paging").setAttribute("data-lock","false");
-    document.getElementById("paging").setAttribute("data-start","0");
-    document.getElementById("paging").setAttribute("data-offset","0");
-}
+// function resetPaging(){
+//     document.getElementById("paging").setAttribute("data-lock","false");
+//     document.getElementById("paging").setAttribute("data-start","0");
+//     document.getElementById("paging").setAttribute("data-offset","0");
+// }
 
-function showDetail(el){
-    document.getElementsByClassName("modal-content-detail")[0].innerHTML = "<div class='modal-detail'>" + document.getElementById($(el).attr("data-detail")).innerHTML + "</div>";
-}
+// function showDetail(el){
+//     document.getElementsByClassName("modal-content-detail")[0].innerHTML = "<div class='modal-detail'>" + document.getElementById($(el).attr("data-detail")).innerHTML + "</div>";
+// }
 
 function showPage(){
     document.getElementById("loader").style.display = "none";
@@ -81,5 +80,5 @@ function showLoading(){
     document.getElementById("paging").setAttribute("data-lock","true");
 }
 
-//Call getDictionary on page load.
-getDictionary();
+//Call getWonDerWord on page load.
+getWonDerWord();

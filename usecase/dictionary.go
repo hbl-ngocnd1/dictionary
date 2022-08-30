@@ -65,9 +65,7 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 		log.Print(err)
 		return nil, err
 	}
-	log.Println(data)
-	data = u.translateService.TranslateData(ctx, data)
-	log.Println(data)
+	data = services.CompositeWordData(data, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(data)))
 	if u.cacheData == nil {
 		u.cacheData = make(map[string][]models.Word)
 	}
@@ -105,6 +103,9 @@ func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.Wond
 	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854")
 	if err != nil {
 		return nil, err
+	}
+	for idx, _ := range data {
+		data[idx] = services.CompositeWonderWordData(data[idx], u.translateService.TranslateData(ctx, services.MakeTransDataFromWonderWord(data[idx])))
 	}
 	u.cacheWonderWord = data
 	return data, nil

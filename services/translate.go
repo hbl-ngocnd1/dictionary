@@ -21,20 +21,70 @@ func NewTranslate() *translateService {
 }
 
 type TranslateService interface {
-	TranslateData(context.Context, []models.Word) []models.Word
+	TranslateData(context.Context, []TransData) []TransData
 }
 
-func (t *translateService) TranslateData(ctx context.Context, data []models.Word) []models.Word {
+func (t *translateService) TranslateData(ctx context.Context, data []TransData) []TransData {
 	return translateData(ctx, data)
 }
 
 var BucketSize = 100
 
-func translateData(ctx context.Context, data []models.Word) []models.Word {
+type TransData struct {
+	Index int
+	Word  string
+	Mean  string
+}
+
+func MakeTransDataFromWord(inputs []models.Word) []TransData {
+	outs := make([]TransData, len(inputs))
+	for i, _ := range inputs {
+		outs[i].Index = inputs[i].Index
+		outs[i].Word = inputs[i].MeanEng
+	}
+	return outs
+}
+
+func CompositeWordData(data []models.Word, trans []TransData) []models.Word {
+	mapTrans := make(map[int]TransData, len(trans))
+	for i, _ := range trans {
+		mapTrans[trans[i].Index] = trans[i]
+	}
+	for i, _ := range data {
+		if tran, ok := mapTrans[data[i].Index]; ok {
+			data[i].MeanVN = tran.Mean
+		}
+	}
+	return data
+}
+
+func MakeTransDataFromWonderWord(inputs []models.WonderWord) []TransData {
+	outs := make([]TransData, len(inputs))
+	for i, _ := range inputs {
+		outs[i].Index = inputs[i].Index
+		outs[i].Word = inputs[i].Term
+	}
+	return outs
+}
+
+func CompositeWonderWordData(data []models.WonderWord, trans []TransData) []models.WonderWord {
+	mapTrans := make(map[int]TransData, len(trans))
+	for i, _ := range trans {
+		mapTrans[trans[i].Index] = trans[i]
+	}
+	for i, _ := range data {
+		if tran, ok := mapTrans[data[i].Index]; ok {
+			data[i].Mean = tran.Mean
+		}
+	}
+	return data
+}
+
+func translateData(ctx context.Context, data []TransData) []TransData {
 	if os.Getenv("DEBUG") == "true" {
 		BucketSize = 10
 	}
-	mapData := make(map[int]models.Word, len(data))
+	mapData := make(map[int]TransData, len(data))
 	maxIdx := 0
 	for _, w := range data {
 		if w.Index > maxIdx {
@@ -42,10 +92,11 @@ func translateData(ctx context.Context, data []models.Word) []models.Word {
 		}
 		mapData[w.Index] = w
 	}
+
 	trans := make([]string, maxIdx+1)
 	for i := 0; i <= maxIdx; i++ {
 		if d, ok := mapData[i]; ok {
-			trans[i] = d.MeanEng
+			trans[i] = d.Word
 		}
 	}
 	translated := make([]string, 0, len(trans))
@@ -81,18 +132,15 @@ func translateData(ctx context.Context, data []models.Word) []models.Word {
 			translated = append(translated, v...)
 		}
 	}
-	start := 0
 	for i, vn := range translated {
 		if v, ok := mapData[i]; ok {
-			if start == 0 {
-				start = i
-			}
-			v.MeanVN = vn
+			v.Mean = vn
 			mapData[i] = v
 		}
 	}
-	result := make([]models.Word, 0, len(mapData))
-	for i := start; i < len(mapData)+start; i++ {
+
+	result := make([]TransData, 0, len(mapData))
+	for i := 0; i < maxIdx; i++ {
 		if w, ok := mapData[i]; ok {
 			result = append(result, w)
 		}

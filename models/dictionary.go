@@ -53,6 +53,7 @@ type WonderWord struct {
 	Reading     string `json:"reading"`
 	Explanation string `json:"explanation"`
 	Example     string `json:"example"`
+	Mean        string `json:"mean"`
 }
 
 func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
@@ -64,6 +65,7 @@ func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
 			helpers.InnerText(tds[1], "td"),
 			helpers.InnerText(tds[2], "td"),
 			helpers.InnerText(tds[3], "td"),
+			"",
 		}
 	}
 	return nil

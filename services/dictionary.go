@@ -68,7 +68,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 	cLen := 0
 	for i, target := range targets {
 		id := i
-		if os.Getenv("DEBUG") == "true" && i == 40 {
+		if os.Getenv("DEBUG") == "true" && i > 40 {
 			break
 		}
 		cLen++
