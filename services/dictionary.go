@@ -74,7 +74,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 		log.Println("can't get entry clearfix p")
 		return nil, nil
 	}
-	os.WriteFile(path.Join("cache", fileName), body, 0666)
+	_ = os.WriteFile(path.Join("cache", fileName), body, 0666)
 	if len(targets) > 2 {
 		targets = targets[2:]
 	}
