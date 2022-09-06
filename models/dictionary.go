@@ -7,6 +7,8 @@ import (
 	"golang.org/x/net/html"
 )
 
+type Fn func(c *html.Node, link, detail string, index int) *Word
+
 type Word struct {
 	Index    int    `json:"index"`
 	Text     string `json:"text"`

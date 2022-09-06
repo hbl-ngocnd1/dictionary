@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"github.com/hbl-ngocnd1/dictionary/models"
 	"net/http"
 	"strconv"
 
@@ -24,37 +25,7 @@ func (f *dictHandler) Dict(c echo.Context) error {
 }
 
 func (f *dictHandler) ApiDict(c echo.Context) error {
-	notCache := c.QueryParam("not_cache")
-	level := c.QueryParam("level")
-	start, err := strconv.Atoi(c.QueryParam("start"))
-	if err != nil {
-		start = 0
-	}
-	pageSize, err := strconv.Atoi(c.QueryParam("page_size"))
-	if err != nil {
-		pageSize = 20
-	}
-	if level == "" {
-		level = "n1"
-	}
-	switch level {
-	case "n1", "n2", "n3", "n4", "n5":
-	default:
-		return c.NoContent(http.StatusBadRequest)
-	}
-	pwd := c.QueryParam("password")
-	ctx := context.Background()
-	data, err := f.dictUseCase.GetDict(ctx, start, pageSize, notCache, level, pwd)
-	switch err {
-	case nil:
-	case usecase.InvalidErr:
-		return c.NoContent(http.StatusBadRequest)
-	case usecase.PermissionDeniedErr:
-		return c.NoContent(http.StatusForbidden)
-	default:
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, data)
+	return getDataJapanese(f, c, models.MakeWord)
 }
 
 func (f *dictHandler) ApiGetDetail(c echo.Context) error {
@@ -99,6 +70,40 @@ func (f *dictHandler) ApiITJapanWonderWord(c echo.Context) error {
 	}
 	if data == nil {
 		return c.String(http.StatusOK, "")
+	}
+	return c.JSON(http.StatusOK, data)
+}
+
+func getDataJapanese(f *dictHandler, c echo.Context, fn models.Fn) error {
+	notCache := c.QueryParam("not_cache")
+	level := c.QueryParam("level")
+	start, err := strconv.Atoi(c.QueryParam("start"))
+	if err != nil {
+		start = 0
+	}
+	pageSize, err := strconv.Atoi(c.QueryParam("page_size"))
+	if err != nil {
+		pageSize = 20
+	}
+	if level == "" {
+		level = "n1"
+	}
+	switch level {
+	case "n1", "n2", "n3", "n4", "n5":
+	default:
+		return c.NoContent(http.StatusBadRequest)
+	}
+	pwd := c.QueryParam("password")
+	ctx := context.Background()
+	data, err := f.dictUseCase.GetDict(ctx, start, pageSize, notCache, level, pwd, fn)
+	switch err {
+	case nil:
+	case usecase.InvalidErr:
+		return c.NoContent(http.StatusBadRequest)
+	case usecase.PermissionDeniedErr:
+		return c.NoContent(http.StatusForbidden)
+	default:
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, data)
 }

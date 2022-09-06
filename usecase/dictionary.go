@@ -32,12 +32,12 @@ func NewDictUseCase() *dictUseCase {
 }
 
 type DictUseCase interface {
-	GetDict(context.Context, int, int, string, string, string) ([]models.Word, error)
+	GetDict(context.Context, int, int, string, string, string, models.Fn) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
 	GetITJapanWonderWork(context.Context) ([][]models.WonderWord, error)
 }
 
-func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string) ([]models.Word, error) {
+func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string, fn models.Fn) ([]models.Word, error) {
 	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil && len(u.cacheData[level]) > 0 {
 		log.Println("use data from cache")
 		if start > len(u.cacheData[level]) {
@@ -56,7 +56,7 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 	}
 	log.Println("use data from source")
 	url := fmt.Sprintf("https://japanesetest4you.com/jlpt-%s-vocabulary-list/", level)
-	data, err := u.dictionaryService.GetDictionary(ctx, url)
+	data, err := u.dictionaryService.GetDictionary(ctx, url, fn)
 	if err != nil {
 		log.Print(err)
 		return nil, err

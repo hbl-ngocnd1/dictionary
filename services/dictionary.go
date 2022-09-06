@@ -24,12 +24,12 @@ func NewDictionary() *dictionaryService {
 }
 
 type DictionaryService interface {
-	GetDictionary(context.Context, string) ([]models.Word, error)
+	GetDictionary(context.Context, string, models.Fn) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (string, error)
 	GetITJapanWonderWork(context.Context, string) ([][]models.WonderWord, error)
 }
 
-func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]models.Word, error) {
+func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn models.Fn) ([]models.Word, error) {
 	ctx, cancel := context.WithTimeout(ctx, 50*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -102,7 +102,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string) ([]mo
 					log.Println(errDetail)
 				}
 			}
-			w := models.MakeWord(child, detailURL, detail, id)
+			w := fn(child, detailURL, detail, id)
 			if w == nil {
 				return
 			}

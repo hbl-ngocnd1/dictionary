@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"github.com/hbl-ngocnd1/dictionary/models"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestDictionaryService_GetDictionary(t *testing.T) {
 	InitTest()
 	BucketSize = 2
 	ctx := context.Background()
-	_, err := NewDictionary().GetDictionary(ctx, "https://japanesetest4you.com/jlpt-n2-vocabulary-list/")
+	_, err := NewDictionary().GetDictionary(ctx, "https://japanesetest4you.com/jlpt-n2-vocabulary-list/", models.MakeWord)
 	assert.Equal(t, nil, err)
 }
 
