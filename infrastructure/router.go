@@ -57,6 +57,7 @@ func SetupServer() *echo.Echo {
 	e.GET("/dictionary", dictHandler.Dict)
 	e.GET("/api/dictionary", dictHandler.ApiDict)
 	e.PUT("api/dictionary/:index", dictHandler.ApiGetDetail)
+	e.GET("api/grammar", dictHandler.ApiGetGrammar)
 
 	e.GET("/wonder-word", dictHandler.ITJapanWonderWord)
 	e.GET("/api/wonder-word", dictHandler.ApiITJapanWonderWord)
