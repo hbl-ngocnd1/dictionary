@@ -7,7 +7,7 @@ require (
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/hblab-ngocnd/csv-demo v0.0.0-20220722154842-6d0832365612
 	github.com/joho/godotenv v1.4.0
-	github.com/labstack/echo/v4 v4.7.2
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/timjacobi/go-couchdb v0.0.0-20160817113035-5f9d2a1a29e5
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
