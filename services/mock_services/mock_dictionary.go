@@ -65,6 +65,21 @@ func (mr *MockDictionaryServiceMockRecorder) GetDictionary(arg0, arg1 interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDictionary", reflect.TypeOf((*MockDictionaryService)(nil).GetDictionary), arg0, arg1)
 }
 
+// GetGrammar mocks base method.
+func (m *MockDictionaryService) GetGrammar(arg0 context.Context, arg1 string) ([]models.Word, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGrammar", arg0, arg1)
+	ret0, _ := ret[0].([]models.Word)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGrammar indicates an expected call of GetGrammar.
+func (mr *MockDictionaryServiceMockRecorder) GetGrammar(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGrammar", reflect.TypeOf((*MockDictionaryService)(nil).GetGrammar), arg0, arg1)
+}
+
 // GetITJapanWonderWork mocks base method.
 func (m *MockDictionaryService) GetITJapanWonderWork(arg0 context.Context, arg1 string) ([][]models.WonderWord, error) {
 	m.ctrl.T.Helper()
