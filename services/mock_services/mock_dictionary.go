@@ -51,7 +51,7 @@ func (mr *MockDictionaryServiceMockRecorder) GetDetail(arg0, arg1, arg2 interfac
 }
 
 // GetDictionary mocks base method.
-func (m *MockDictionaryService) GetDictionary(arg0 context.Context, arg1 string, arg2 models.Fn) ([]models.Word, error) {
+func (m *MockDictionaryService) GetDictionary(arg0 context.Context, arg1 string, arg2 models.MakeData) ([]models.Word, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetDictionary", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]models.Word)

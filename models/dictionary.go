@@ -7,8 +7,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-type Fn func(c *html.Node, link, detail string, index int) *Word
-
 type Word struct {
 	Index    int    `json:"index"`
 	Text     string `json:"text"`
@@ -29,25 +27,38 @@ type WonderWord struct {
 }
 
 type Data interface {
-	GetData() interface{}
+	GetText() string
+	GetMean() string
+	GetDetail() string
 }
 
-func (w *Word) GetData() interface{} {
-	return w
+func (w *Word) GetText() string {
+	return w.Text
 }
 
-func (w *WonderWord) GetData() interface{} {
-	return w
+func (w *Word) GetMean() string {
+	return w.Text
 }
 
-func MakeData(c *html.Node, idx int, option ...string) Data {
-	if len(option) == 0 {
-		return MakeWonderWork(c, idx)
-	}
-	return MakeWord(c, option[0], option[1], idx)
+func (w *Word) GetDetail() string {
+	return w.Text
 }
 
-func MakeWord(c *html.Node, link, detail string, index int) *Word {
+func (w *WonderWord) GetText() string {
+	return w.Term
+}
+
+func (w *WonderWord) GetMean() string {
+	return w.Mean
+}
+
+func (w *WonderWord) GetDetail() string {
+	return w.Explanation
+}
+
+type MakeData func(c *html.Node, idx int, option ...string) Data
+
+func MakeWord(c *html.Node, index int, options ...string) Data {
 	if c.FirstChild == nil {
 		c = c.Parent
 	}
@@ -56,8 +67,8 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		return &Word{
 			Index:  index,
 			Text:   c.FirstChild.Data,
-			Detail: detail,
-			Link:   link,
+			Detail: options[0],
+			Link:   options[1],
 		}
 	}
 	mean := c.FirstChild.Data[idx+1:]
@@ -72,8 +83,8 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		Text:     text,
 		Alphabet: alphabet,
 		MeanEng:  mean,
-		Detail:   detail,
-		Link:     link,
+		Detail:   options[0],
+		Link:     options[1],
 	}
 }
 

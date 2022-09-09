@@ -51,7 +51,7 @@ func (mr *MockDictUseCaseMockRecorder) GetDetail(arg0, arg1, arg2 interface{}) *
 }
 
 // GetDict mocks base method.
-func (m *MockDictUseCase) GetDict(arg0 context.Context, arg1, arg2 int, arg3, arg4, arg5 string, arg6 models.Fn) ([]models.Word, error) {
+func (m *MockDictUseCase) GetDict(arg0 context.Context, arg1, arg2 int, arg3, arg4, arg5 string, arg6 models.MakeData) ([]models.Word, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetDict", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 	ret0, _ := ret[0].([]models.Word)

@@ -2,9 +2,10 @@ package controller
 
 import (
 	"context"
-	"github.com/hbl-ngocnd1/dictionary/models"
 	"net/http"
 	"strconv"
+
+	"github.com/hbl-ngocnd1/dictionary/models"
 
 	"github.com/hbl-ngocnd1/dictionary/usecase"
 	"github.com/labstack/echo/v4"
@@ -74,7 +75,7 @@ func (f *dictHandler) ApiITJapanWonderWord(c echo.Context) error {
 	return c.JSON(http.StatusOK, data)
 }
 
-func getDataJapanese(f *dictHandler, c echo.Context, fn models.Fn) error {
+func getDataJapanese(f *dictHandler, c echo.Context, makeData models.MakeData) error {
 	notCache := c.QueryParam("not_cache")
 	level := c.QueryParam("level")
 	start, err := strconv.Atoi(c.QueryParam("start"))
@@ -95,7 +96,7 @@ func getDataJapanese(f *dictHandler, c echo.Context, fn models.Fn) error {
 	}
 	pwd := c.QueryParam("password")
 	ctx := context.Background()
-	data, err := f.dictUseCase.GetDict(ctx, start, pageSize, notCache, level, pwd, fn)
+	data, err := f.dictUseCase.GetDict(ctx, start, pageSize, notCache, level, pwd, makeData)
 	switch err {
 	case nil:
 	case usecase.InvalidErr:
