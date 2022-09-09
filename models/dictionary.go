@@ -27,9 +27,14 @@ type WonderWord struct {
 }
 
 type Data interface {
+	GetIdx() int
 	GetText() string
 	GetMean() string
 	GetDetail() string
+}
+
+func (w *Word) GetIdx() int {
+	return w.Index
 }
 
 func (w *Word) GetText() string {

@@ -61,21 +61,27 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 		log.Print(err)
 		return nil, err
 	}
-	data = services.CompositeWordData(data, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(data)))
+	words := make([]models.Word, len(data))
+	for i, d := range data {
+		if word, ok := d.(*models.Word); ok {
+			words[i] = *word
+		}
+	}
+	words = services.CompositeWordData(words, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(words)))
 	u.mu.Lock()
 	if u.cacheData == nil {
 		u.cacheData = make(map[string][]models.Word)
 	}
-	u.cacheData[level] = data
+	u.cacheData[level] = words
 	u.mu.Unlock()
-	if start > len(data) {
-		start = len(data)
+	if start > len(words) {
+		start = len(words)
 	}
 	end := start + pageSize
-	if end > len(data) {
-		end = len(data)
+	if end > len(words) {
+		end = len(words)
 	}
-	return data[start:end], nil
+	return words[start:end], nil
 }
 
 func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*string, error) {

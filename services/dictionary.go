@@ -24,12 +24,12 @@ func NewDictionary() *dictionaryService {
 }
 
 type DictionaryService interface {
-	GetDictionary(context.Context, string, models.MakeData) ([]models.Word, error)
+	GetDictionary(context.Context, string, models.MakeData) ([]models.Data, error)
 	GetDetail(context.Context, string, int) (string, error)
 	GetITJapanWonderWork(context.Context, string) ([][]models.WonderWord, error)
 }
 
-func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn models.MakeData) ([]models.Word, error) {
+func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn models.MakeData) ([]models.Data, error) {
 	ctx, cancel := context.WithTimeout(ctx, 50*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -78,7 +78,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn mo
 	if len(targets) > 2 {
 		targets = targets[2:]
 	}
-	c := make(chan models.Word)
+	c := make(chan models.Data)
 	defer close(c)
 	cLen := 0
 	for i, target := range targets {
@@ -88,7 +88,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn mo
 		}
 		cLen++
 		tar := target
-		go func(c chan models.Word) {
+		go func(c chan models.Data) {
 			child := tar.FirstChild
 			if child == nil {
 				child = tar
@@ -106,22 +106,22 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn mo
 			if w == nil {
 				return
 			}
-			c <- *w.(*models.Word)
+			c <- w
 		}(c)
 	}
-	data := make([]models.Word, 0, cLen)
-	mapResult := make(map[int]*models.Word)
+	data := make([]models.Data, 0, cLen)
+	mapResult := make(map[int]models.Data)
 	maxIdx := 0
 	for i := 0; i < cLen; i++ {
 		info := <-c
 		maxIdx = i
-		mapResult[info.Index] = &info
+		mapResult[info.GetIdx()] = info
 	}
 	for i := 0; i <= maxIdx; i++ {
 		if mapResult[i] == nil {
 			continue
 		}
-		data = append(data, *mapResult[i])
+		data = append(data, mapResult[i])
 	}
 	log.Println("clone done")
 	return data, nil
