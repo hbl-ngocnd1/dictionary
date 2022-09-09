@@ -19,6 +19,34 @@ type Word struct {
 	Link     string `json:"_"`
 }
 
+type WonderWord struct {
+	Index       int    `json:"index"`
+	Term        string `json:"term"`
+	Reading     string `json:"reading"`
+	Explanation string `json:"explanation"`
+	Example     string `json:"example"`
+	Mean        string `json:"mean"`
+}
+
+type Data interface {
+	GetData() interface{}
+}
+
+func (w *Word) GetData() interface{} {
+	return w
+}
+
+func (w *WonderWord) GetData() interface{} {
+	return w
+}
+
+func MakeData(c *html.Node, idx int, option ...string) Data {
+	if len(option) == 0 {
+		return MakeWonderWork(c, idx)
+	}
+	return MakeWord(c, option[0], option[1], idx)
+}
+
 func MakeWord(c *html.Node, link, detail string, index int) *Word {
 	if c.FirstChild == nil {
 		c = c.Parent
@@ -47,15 +75,6 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		Detail:   detail,
 		Link:     link,
 	}
-}
-
-type WonderWord struct {
-	Index       int    `json:"index"`
-	Term        string `json:"term"`
-	Reading     string `json:"reading"`
-	Explanation string `json:"explanation"`
-	Example     string `json:"example"`
-	Mean        string `json:"mean"`
 }
 
 func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
