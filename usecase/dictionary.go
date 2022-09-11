@@ -20,7 +20,7 @@ type dictUseCase struct {
 	translateService  services.TranslateService
 	dictionaryService services.DictionaryService
 	cacheData         map[string][]models.Word
-	cacheWonderWord   [][]models.WonderWord
+	cacheWonderWord   [][]models.Data
 	mu                sync.Mutex
 }
 
@@ -34,7 +34,7 @@ func NewDictUseCase() *dictUseCase {
 type DictUseCase interface {
 	GetDict(context.Context, int, int, string, string, string, models.MakeData) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
-	GetITJapanWonderWork(context.Context) ([][]models.WonderWord, error)
+	GetITJapanWonderWork(context.Context) ([][]models.Data, error)
 }
 
 func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string, fn models.MakeData) ([]models.Word, error) {
@@ -100,7 +100,7 @@ func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*
 	return &data, nil
 }
 
-func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.WonderWord, error) {
+func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.Data, error) {
 	if u.cacheWonderWord == nil && len(u.cacheWonderWord) > 0 {
 		return u.cacheWonderWord, nil
 	}

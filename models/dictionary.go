@@ -28,8 +28,9 @@ type WonderWord struct {
 
 type Data interface {
 	GetIdx() int
-	GetText() string
+	GetTextOrTerm() string
 	GetMean() string
+	SetMean(string)
 	GetDetail() string
 }
 
@@ -37,7 +38,7 @@ func (w *Word) GetIdx() int {
 	return w.Index
 }
 
-func (w *Word) GetText() string {
+func (w *Word) GetTextOrTerm() string {
 	return w.Text
 }
 
@@ -45,16 +46,28 @@ func (w *Word) GetMean() string {
 	return w.Text
 }
 
+func (w *Word) SetMean(mean string) {
+	w.MeanEng = mean
+}
+
 func (w *Word) GetDetail() string {
 	return w.Text
 }
 
-func (w *WonderWord) GetText() string {
+func (w *WonderWord) GetIdx() int {
+	return w.Index
+}
+
+func (w *WonderWord) GetTextOrTerm() string {
 	return w.Term
 }
 
 func (w *WonderWord) GetMean() string {
 	return w.Mean
+}
+
+func (w *WonderWord) SetMean(mean string) {
+	w.Mean = mean
 }
 
 func (w *WonderWord) GetDetail() string {

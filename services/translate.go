@@ -58,23 +58,23 @@ func CompositeWordData(data []models.Word, trans []TransData) []models.Word {
 	return data
 }
 
-func MakeTransDataFromWonderWord(inputs []models.WonderWord) []TransData {
+func MakeTransDataFromWonderWord(inputs []models.Data) []TransData {
 	outs := make([]TransData, len(inputs))
 	for i := range inputs {
-		outs[i].Index = inputs[i].Index
-		outs[i].Word = inputs[i].Term
+		outs[i].Index = inputs[i].GetIdx()
+		outs[i].Word = inputs[i].GetTextOrTerm()
 	}
 	return outs
 }
 
-func CompositeWonderWordData(data []models.WonderWord, trans []TransData) []models.WonderWord {
+func CompositeWonderWordData(data []models.Data, trans []TransData) []models.Data {
 	mapTrans := make(map[int]TransData, len(trans))
 	for i := range trans {
 		mapTrans[trans[i].Index] = trans[i]
 	}
 	for i := range data {
-		if tran, ok := mapTrans[data[i].Index]; ok {
-			data[i].Mean = tran.Mean
+		if tran, ok := mapTrans[data[i].GetIdx()]; ok {
+			data[i].SetMean(tran.Mean)
 		}
 	}
 	return data
