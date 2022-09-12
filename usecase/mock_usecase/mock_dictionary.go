@@ -66,10 +66,10 @@ func (mr *MockDictUseCaseMockRecorder) GetDict(arg0, arg1, arg2, arg3, arg4, arg
 }
 
 // GetITJapanWonderWork mocks base method.
-func (m *MockDictUseCase) GetITJapanWonderWork(arg0 context.Context) ([][]models.WonderWord, error) {
+func (m *MockDictUseCase) GetITJapanWonderWork(arg0 context.Context) ([][]models.Data, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetITJapanWonderWork", arg0)
-	ret0, _ := ret[0].([][]models.WonderWord)
+	ret0, _ := ret[0].([][]models.Data)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
