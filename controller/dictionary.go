@@ -19,6 +19,41 @@ func NewDictHandler() *dictHandler {
 	}
 }
 
+func (f *dictHandler) ApiGetGrammar(c echo.Context) error {
+	// TODO: get thing
+	notCache := c.QueryParam("not_cache")
+	level := c.QueryParam("level")
+	start, err := strconv.Atoi(c.QueryParam("start"))
+	if err != nil {
+		start = 0
+	}
+	pageSize, err := strconv.Atoi(c.QueryParam("page_size"))
+	if err != nil {
+		pageSize = 20
+	}
+	if level == "" {
+		level = "n1"
+	}
+	switch level {
+	case "n1", "n2", "n3", "n4", "n5":
+	default:
+		return c.NoContent(http.StatusBadRequest)
+	}
+	password := c.QueryParam("password")
+	ctx := context.Background()
+	data, err := f.dictUseCase.GetGrammar(ctx, start, pageSize, notCache, level, password)
+	switch err {
+	case nil:
+	case usecase.InvalidErr:
+		return c.NoContent(http.StatusBadRequest)
+	case usecase.PermissionDeniedErr:
+		return c.NoContent(http.StatusForbidden)
+	default:
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, data)
+}
+
 func (f *dictHandler) Dict(c echo.Context) error {
 	return c.Render(http.StatusOK, "dictionary.html", map[string]interface{}{"router": "dictionary"})
 }

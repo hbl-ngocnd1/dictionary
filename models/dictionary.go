@@ -70,3 +70,33 @@ func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
 	}
 	return nil
 }
+
+func MakeGrammarWord(c *html.Node, link, detail string, index int) *Word {
+	if c.FirstChild == nil {
+		c = c.Parent
+	}
+	idx := strings.Index(c.NextSibling.Data, ":")
+	if idx < 0 {
+		return &Word{
+			Index:  index,
+			Text:   c.FirstChild.Data,
+			Detail: detail,
+			Link:   link,
+		}
+	}
+	mean := c.NextSibling.Data[2:]                   // dang sau
+	arr := strings.Split(c.FirstChild.Data[:], " (") // dang truoc
+	text := arr[0]
+	var alphabet string
+	if len(arr) > 1 {
+		alphabet = strings.TrimRight(arr[1], ")")
+	}
+	return &Word{
+		Index:    index,
+		Text:     text,
+		Alphabet: alphabet,
+		MeanEng:  mean,
+		Detail:   detail,
+		Link:     link,
+	}
+}

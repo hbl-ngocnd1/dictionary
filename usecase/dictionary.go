@@ -33,6 +33,7 @@ func NewDictUseCase() *dictUseCase {
 
 type DictUseCase interface {
 	GetDict(context.Context, int, int, string, string, string) ([]models.Word, error)
+	GetGrammar(context.Context, int, int, string, string, string) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
 	GetITJapanWonderWork(context.Context) ([][]models.WonderWord, error)
 }
@@ -57,6 +58,47 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 	log.Println("use data from source")
 	url := fmt.Sprintf("https://japanesetest4you.com/jlpt-%s-vocabulary-list/", level)
 	data, err := u.dictionaryService.GetDictionary(ctx, url)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	data = services.CompositeWordData(data, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(data)))
+	u.mu.Lock()
+	if u.cacheData == nil {
+		u.cacheData = make(map[string][]models.Word)
+	}
+	u.cacheData[level] = data
+	u.mu.Unlock()
+	if start > len(data) {
+		start = len(data)
+	}
+	end := start + pageSize
+	if end > len(data) {
+		end = len(data)
+	}
+	return data[start:end], nil
+}
+
+func (u *dictUseCase) GetGrammar(ctx context.Context, start, pageSize int, notCache, level, pwd string) ([]models.Word, error) {
+	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil && len(u.cacheData[level]) > 0 {
+		log.Println("use data from cache")
+		if start > len(u.cacheData[level]) {
+			start = len(u.cacheData[level])
+		}
+		end := start + pageSize
+		if end > len(u.cacheData[level]) {
+			end = len(u.cacheData[level])
+		}
+		return u.cacheData[level][start:end], nil
+	}
+	if notCache == "true" {
+		if len(strings.TrimSpace(pwd)) == 0 || pwd != os.Getenv("SYNC_PASS") {
+			return nil, PermissionDeniedErr
+		}
+	}
+	log.Println("use data from source")
+	url := fmt.Sprintf("https://japanesetest4you.com/jlpt-%s-grammar-list/", level)
+	data, err := u.dictionaryService.GetGrammar(ctx, url)
 	if err != nil {
 		log.Print(err)
 		return nil, err
