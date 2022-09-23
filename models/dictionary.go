@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/hbl-ngocnd1/dictionary/helpers"
 	"strings"
 
-	"github.com/hbl-ngocnd1/dictionary/helpers"
 	"golang.org/x/net/html"
 )
 
@@ -106,16 +106,16 @@ func MakeWord(c *html.Node, index int, options ...string) Data {
 	}
 }
 
-func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
+func MakeWonderWork(tr *html.Node, idx int, options ...string) Data {
 	tds := helpers.GetListElementByTag(tr, "td")
 	if len(tds) == 4 {
 		return &WonderWord{
-			idx,
-			helpers.InnerText(tds[0], "td"),
-			helpers.InnerText(tds[1], "td"),
-			helpers.InnerText(tds[2], "td"),
-			helpers.InnerText(tds[3], "td"),
-			"",
+			Index:       idx,
+			Term:        helpers.InnerText(tds[0], "td"),
+			Reading:     helpers.InnerText(tds[1], "td"),
+			Explanation: helpers.InnerText(tds[2], "td"),
+			Example:     helpers.InnerText(tds[3], "td"),
+			Mean:        "",
 		}
 	}
 	return nil

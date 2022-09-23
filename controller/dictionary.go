@@ -61,7 +61,7 @@ func (f *dictHandler) ITJapanWonderWord(c echo.Context) error {
 
 func (f *dictHandler) ApiITJapanWonderWord(c echo.Context) error {
 	ctx := context.Background()
-	data, err := f.dictUseCase.GetITJapanWonderWork(ctx)
+	data, err := f.dictUseCase.GetITJapanWonderWork(ctx, models.MakeWonderWork)
 	switch err {
 	case nil:
 	case usecase.InvalidErr:
@@ -70,6 +70,7 @@ func (f *dictHandler) ApiITJapanWonderWord(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	if data == nil {
+
 		return c.String(http.StatusOK, "")
 	}
 	return c.JSON(http.StatusOK, data)

@@ -34,7 +34,7 @@ func NewDictUseCase() *dictUseCase {
 type DictUseCase interface {
 	GetDict(context.Context, int, int, string, string, string, models.MakeData) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
-	GetITJapanWonderWork(context.Context) ([][]models.Data, error)
+	GetITJapanWonderWork(context.Context, models.MakeData) ([][]models.Data, error)
 }
 
 func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string, fn models.MakeData) ([]models.Word, error) {
@@ -100,11 +100,11 @@ func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*
 	return &data, nil
 }
 
-func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.Data, error) {
+func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context, fn models.MakeData) ([][]models.Data, error) {
 	if u.cacheWonderWord == nil && len(u.cacheWonderWord) > 0 {
 		return u.cacheWonderWord, nil
 	}
-	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854")
+	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854", fn)
 	if err != nil {
 		return nil, err
 	}

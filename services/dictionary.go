@@ -26,7 +26,7 @@ func NewDictionary() *dictionaryService {
 type DictionaryService interface {
 	GetDictionary(context.Context, string, models.MakeData) ([]models.Data, error)
 	GetDetail(context.Context, string, int) (string, error)
-	GetITJapanWonderWork(context.Context, string) ([][]models.Data, error)
+	GetITJapanWonderWork(context.Context, string, models.MakeData) ([][]models.Data, error)
 }
 
 func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn models.MakeData) ([]models.Data, error) {
@@ -186,7 +186,7 @@ func (d *dictionaryService) getDetail(ctx context.Context, url string, i int) (s
 	return strings.Join(data, ""), nil
 }
 
-func (d *dictionaryService) GetITJapanWonderWork(ctx context.Context, url string) ([][]models.Data, error) {
+func (d *dictionaryService) GetITJapanWonderWork(ctx context.Context, url string, fn models.MakeData) ([][]models.Data, error) {
 	ctx, cancel := context.WithTimeout(ctx, 50*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -216,7 +216,7 @@ func (d *dictionaryService) GetITJapanWonderWork(ctx context.Context, url string
 		trs := helpers.GetListElementByTag(tbody[0], "tr")
 		data[idx1] = make([]models.Data, len(trs))
 		for idx2, tr := range trs {
-			work := models.MakeWonderWork(tr, idx2)
+			work := fn(tr, idx2)
 			if work != nil {
 				data[idx1][idx2] = work
 			}
