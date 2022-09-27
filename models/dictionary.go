@@ -77,6 +77,12 @@ func (w *WonderWord) GetDetail() string {
 type MakeData func(c *html.Node, idx int, option ...string) Data
 
 func MakeWord(c *html.Node, index int, options ...string) Data {
+	if len(options) < 2 {
+		return &Word{
+			Index: index,
+			Text:  c.FirstChild.Data,
+		}
+	}
 	if c.FirstChild == nil {
 		c = c.Parent
 	}
