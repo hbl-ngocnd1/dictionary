@@ -102,7 +102,7 @@ func (d *dictionaryService) GetDictionary(ctx context.Context, url string, fn mo
 					log.Println(errDetail)
 				}
 			}
-			w := fn(child, id, detailURL, detail)
+			w := fn(child, id, detail, detailURL)
 			if w == nil {
 				return
 			}
