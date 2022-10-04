@@ -26,7 +26,7 @@ func TestDictHandler_getDetail(t *testing.T) {
 
 func TestDictHandler_GetITJapanWonderWork(t *testing.T) {
 	ctx := context.Background()
-	data, err := NewDictionary().GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854")
+	data, err := NewDictionary().GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854", models.MakeWonderWork)
 	fmt.Println(data)
 	assert.Equal(t, nil, err)
 }

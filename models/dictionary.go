@@ -1,13 +1,11 @@
 package models
 
 import (
+	"github.com/hbl-ngocnd1/dictionary/helpers"
 	"strings"
 
-	"github.com/hbl-ngocnd1/dictionary/helpers"
 	"golang.org/x/net/html"
 )
-
-type Fn func(c *html.Node, link, detail string, index int) *Word
 
 type Word struct {
 	Index    int    `json:"index"`
@@ -19,7 +17,72 @@ type Word struct {
 	Link     string `json:"_"`
 }
 
-func MakeWord(c *html.Node, link, detail string, index int) *Word {
+type WonderWord struct {
+	Index       int    `json:"index"`
+	Term        string `json:"term"`
+	Reading     string `json:"reading"`
+	Explanation string `json:"explanation"`
+	Example     string `json:"example"`
+	Mean        string `json:"mean"`
+}
+
+type Data interface {
+	GetIdx() int
+	GetTextOrTerm() string
+	GetMean() string
+	SetMean(string)
+	GetDetail() string
+}
+
+func (w *Word) GetIdx() int {
+	return w.Index
+}
+
+func (w *Word) GetTextOrTerm() string {
+	return w.Text
+}
+
+func (w *Word) GetMean() string {
+	return w.Text
+}
+
+func (w *Word) SetMean(mean string) {
+	w.MeanEng = mean
+}
+
+func (w *Word) GetDetail() string {
+	return w.Text
+}
+
+func (w *WonderWord) GetIdx() int {
+	return w.Index
+}
+
+func (w *WonderWord) GetTextOrTerm() string {
+	return w.Term
+}
+
+func (w *WonderWord) GetMean() string {
+	return w.Mean
+}
+
+func (w *WonderWord) SetMean(mean string) {
+	w.Mean = mean
+}
+
+func (w *WonderWord) GetDetail() string {
+	return w.Explanation
+}
+
+type MakeData func(c *html.Node, idx int, option ...string) Data
+
+func MakeWord(c *html.Node, index int, options ...string) Data {
+	if len(options) < 2 {
+		return &Word{
+			Index: index,
+			Text:  c.FirstChild.Data,
+		}
+	}
 	if c.FirstChild == nil {
 		c = c.Parent
 	}
@@ -28,8 +91,8 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		return &Word{
 			Index:  index,
 			Text:   c.FirstChild.Data,
-			Detail: detail,
-			Link:   link,
+			Detail: options[0],
+			Link:   options[1],
 		}
 	}
 	mean := c.FirstChild.Data[idx+1:]
@@ -44,30 +107,21 @@ func MakeWord(c *html.Node, link, detail string, index int) *Word {
 		Text:     text,
 		Alphabet: alphabet,
 		MeanEng:  mean,
-		Detail:   detail,
-		Link:     link,
+		Detail:   options[0],
+		Link:     options[1],
 	}
 }
 
-type WonderWord struct {
-	Index       int    `json:"index"`
-	Term        string `json:"term"`
-	Reading     string `json:"reading"`
-	Explanation string `json:"explanation"`
-	Example     string `json:"example"`
-	Mean        string `json:"mean"`
-}
-
-func MakeWonderWork(tr *html.Node, idx int) *WonderWord {
+func MakeWonderWork(tr *html.Node, idx int, options ...string) Data {
 	tds := helpers.GetListElementByTag(tr, "td")
 	if len(tds) == 4 {
 		return &WonderWord{
-			idx,
-			helpers.InnerText(tds[0], "td"),
-			helpers.InnerText(tds[1], "td"),
-			helpers.InnerText(tds[2], "td"),
-			helpers.InnerText(tds[3], "td"),
-			"",
+			Index:       idx,
+			Term:        helpers.InnerText(tds[0], "td"),
+			Reading:     helpers.InnerText(tds[1], "td"),
+			Explanation: helpers.InnerText(tds[2], "td"),
+			Example:     helpers.InnerText(tds[3], "td"),
+			Mean:        "",
 		}
 	}
 	return nil

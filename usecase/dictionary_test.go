@@ -35,8 +35,8 @@ func Test_GetDict(t *testing.T) {
 			pwd:         "sync_pass",
 			newMockDictService: func(ctrl *gomock.Controller) services.DictionaryService {
 				mock := mock_services.NewMockDictionaryService(ctrl)
-				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Word{
-					{}, {}, {}, {},
+				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Data{
+					&models.Word{}, &models.Word{}, &models.Word{}, &models.Word{},
 				}, nil)
 				return mock
 			},
@@ -61,8 +61,8 @@ func Test_GetDict(t *testing.T) {
 			pwd:         "sync_pass",
 			newMockDictService: func(ctrl *gomock.Controller) services.DictionaryService {
 				mock := mock_services.NewMockDictionaryService(ctrl)
-				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Word{
-					{}, {}, {}, {},
+				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Data{
+					&models.Word{}, &models.Word{}, &models.Word{}, &models.Word{},
 				}, nil)
 				return mock
 			},
@@ -87,8 +87,8 @@ func Test_GetDict(t *testing.T) {
 			pwd:         "sync_pass",
 			newMockDictService: func(ctrl *gomock.Controller) services.DictionaryService {
 				mock := mock_services.NewMockDictionaryService(ctrl)
-				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Word{
-					{},
+				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Data{
+					&models.Word{}, &models.Word{}, &models.Word{}, &models.Word{},
 				}, nil)
 				return mock
 			},
@@ -121,8 +121,8 @@ func Test_GetDict(t *testing.T) {
 			pwd:         "sync_pass",
 			newMockDictService: func(ctrl *gomock.Controller) services.DictionaryService {
 				mock := mock_services.NewMockDictionaryService(ctrl)
-				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Word{
-					{}, {}, {}, {},
+				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Data{
+					&models.Word{}, &models.Word{}, &models.Word{}, &models.Word{},
 				}, nil)
 				return mock
 			},
@@ -175,8 +175,8 @@ func Test_GetDict(t *testing.T) {
 			pwd:         "sync_pass",
 			newMockDictService: func(ctrl *gomock.Controller) services.DictionaryService {
 				mock := mock_services.NewMockDictionaryService(ctrl)
-				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Word{
-					{}, {}, {}, {},
+				mock.EXPECT().GetDictionary(gomock.Any(), gomock.Eq("https://japanesetest4you.com/jlpt-n1-vocabulary-list/"), gomock.Any()).Return([]models.Data{
+					&models.Word{}, &models.Word{}, &models.Word{}, &models.Word{},
 				}, InvalidErr)
 				return mock
 			},

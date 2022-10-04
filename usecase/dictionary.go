@@ -20,7 +20,7 @@ type dictUseCase struct {
 	translateService  services.TranslateService
 	dictionaryService services.DictionaryService
 	cacheData         map[string][]models.Word
-	cacheWonderWord   [][]models.WonderWord
+	cacheWonderWord   [][]models.Data
 	mu                sync.Mutex
 }
 
@@ -32,12 +32,12 @@ func NewDictUseCase() *dictUseCase {
 }
 
 type DictUseCase interface {
-	GetDict(context.Context, int, int, string, string, string, models.Fn) ([]models.Word, error)
+	GetDict(context.Context, int, int, string, string, string, models.MakeData) ([]models.Word, error)
 	GetDetail(context.Context, string, int) (*string, error)
-	GetITJapanWonderWork(context.Context) ([][]models.WonderWord, error)
+	GetITJapanWonderWork(context.Context, models.MakeData) ([][]models.Data, error)
 }
 
-func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string, fn models.Fn) ([]models.Word, error) {
+func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache, level, pwd string, fn models.MakeData) ([]models.Word, error) {
 	if notCache != "true" && u.cacheData != nil && u.cacheData[level] != nil && len(u.cacheData[level]) > 0 {
 		log.Println("use data from cache")
 		if start > len(u.cacheData[level]) {
@@ -61,21 +61,27 @@ func (u *dictUseCase) GetDict(ctx context.Context, start, pageSize int, notCache
 		log.Print(err)
 		return nil, err
 	}
-	data = services.CompositeWordData(data, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(data)))
+	words := make([]models.Word, len(data))
+	for i, d := range data {
+		if word, ok := d.(*models.Word); ok {
+			words[i] = *word
+		}
+	}
+	words = services.CompositeWordData(words, u.translateService.TranslateData(ctx, services.MakeTransDataFromWord(words)))
 	u.mu.Lock()
 	if u.cacheData == nil {
 		u.cacheData = make(map[string][]models.Word)
 	}
-	u.cacheData[level] = data
+	u.cacheData[level] = words
 	u.mu.Unlock()
-	if start > len(data) {
-		start = len(data)
+	if start > len(words) {
+		start = len(words)
 	}
 	end := start + pageSize
-	if end > len(data) {
-		end = len(data)
+	if end > len(words) {
+		end = len(words)
 	}
-	return data[start:end], nil
+	return words[start:end], nil
 }
 
 func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*string, error) {
@@ -94,11 +100,11 @@ func (u *dictUseCase) GetDetail(ctx context.Context, level string, index int) (*
 	return &data, nil
 }
 
-func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context) ([][]models.WonderWord, error) {
+func (u *dictUseCase) GetITJapanWonderWork(ctx context.Context, fn models.MakeData) ([][]models.Data, error) {
 	if u.cacheWonderWord == nil && len(u.cacheWonderWord) > 0 {
 		return u.cacheWonderWord, nil
 	}
-	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854")
+	data, err := u.dictionaryService.GetITJapanWonderWork(ctx, "https://qiita.com/t_nakayama0714/items/478a8ed3a9ae143ad854", fn)
 	if err != nil {
 		return nil, err
 	}
