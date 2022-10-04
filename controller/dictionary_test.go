@@ -40,7 +40,7 @@ func TestNewDictHandler(t *testing.T) {
 			statusCode:  http.StatusOK,
 			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
 				mock := mock_usecase.NewMockDictUseCase(ctrl)
-				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, nil)
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, nil)
 				return mock
 			},
 		},
@@ -54,7 +54,7 @@ func TestNewDictHandler(t *testing.T) {
 			urlParam:    "",
 			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
 				mock := mock_usecase.NewMockDictUseCase(ctrl)
-				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("unexpected"))
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("unexpected"))
 				return mock
 			},
 			statusCode: http.StatusInternalServerError,
@@ -65,7 +65,7 @@ func TestNewDictHandler(t *testing.T) {
 			statusCode:  http.StatusBadRequest,
 			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
 				mock := mock_usecase.NewMockDictUseCase(ctrl)
-				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, usecase.InvalidErr)
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, usecase.InvalidErr)
 				return mock
 			},
 		},
@@ -75,7 +75,7 @@ func TestNewDictHandler(t *testing.T) {
 			statusCode:  http.StatusForbidden,
 			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
 				mock := mock_usecase.NewMockDictUseCase(ctrl)
-				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, usecase.PermissionDeniedErr)
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, usecase.PermissionDeniedErr)
 				return mock
 			},
 		},
@@ -85,7 +85,7 @@ func TestNewDictHandler(t *testing.T) {
 			statusCode:  http.StatusInternalServerError,
 			newMockDictUC: func(ctrl *gomock.Controller) usecase.DictUseCase {
 				mock := mock_usecase.NewMockDictUseCase(ctrl)
-				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, errors.New("another Error"))
+				mock.EXPECT().GetDict(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]models.Word{{}, {}, {}}, errors.New("another Error"))
 				return mock
 			},
 		},

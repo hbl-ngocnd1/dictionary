@@ -51,31 +51,31 @@ func (mr *MockDictUseCaseMockRecorder) GetDetail(arg0, arg1, arg2 interface{}) *
 }
 
 // GetDict mocks base method.
-func (m *MockDictUseCase) GetDict(arg0 context.Context, arg1, arg2 int, arg3, arg4, arg5 string) ([]models.Word, error) {
+func (m *MockDictUseCase) GetDict(arg0 context.Context, arg1, arg2 int, arg3, arg4, arg5 string, arg6 models.MakeData) ([]models.Word, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDict", arg0, arg1, arg2, arg3, arg4, arg5)
+	ret := m.ctrl.Call(m, "GetDict", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 	ret0, _ := ret[0].([]models.Word)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetDict indicates an expected call of GetDict.
-func (mr *MockDictUseCaseMockRecorder) GetDict(arg0, arg1, arg2, arg3, arg4, arg5 interface{}) *gomock.Call {
+func (mr *MockDictUseCaseMockRecorder) GetDict(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDict", reflect.TypeOf((*MockDictUseCase)(nil).GetDict), arg0, arg1, arg2, arg3, arg4, arg5)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDict", reflect.TypeOf((*MockDictUseCase)(nil).GetDict), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
 // GetITJapanWonderWork mocks base method.
-func (m *MockDictUseCase) GetITJapanWonderWork(arg0 context.Context) ([][]models.WonderWord, error) {
+func (m *MockDictUseCase) GetITJapanWonderWork(arg0 context.Context, arg1 models.MakeData) ([][]models.Data, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetITJapanWonderWork", arg0)
-	ret0, _ := ret[0].([][]models.WonderWord)
+	ret := m.ctrl.Call(m, "GetITJapanWonderWork", arg0, arg1)
+	ret0, _ := ret[0].([][]models.Data)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetITJapanWonderWork indicates an expected call of GetITJapanWonderWork.
-func (mr *MockDictUseCaseMockRecorder) GetITJapanWonderWork(arg0 interface{}) *gomock.Call {
+func (mr *MockDictUseCaseMockRecorder) GetITJapanWonderWork(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetITJapanWonderWork", reflect.TypeOf((*MockDictUseCase)(nil).GetITJapanWonderWork), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetITJapanWonderWork", reflect.TypeOf((*MockDictUseCase)(nil).GetITJapanWonderWork), arg0, arg1)
 }
